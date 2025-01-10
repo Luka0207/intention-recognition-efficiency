@@ -1,0 +1,13 @@
+numpy
+scipy
+pandas
+matplotlib
+scikit-learn
+tensorflow
+keras
+transformers
+umap-learn
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
