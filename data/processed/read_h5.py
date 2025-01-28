@@ -33,8 +33,16 @@ def read_hdf5_file(hdf5_path: str) -> Dict[str, object]:
         # Read channels
         channels: List[str] = [ch.decode("utf-8") for ch in hdf["channels"][:]]
 
+        # Read channels
+        order: List[str] = [ch.decode("utf-8") for ch in hdf["order"][:]]
+
+        # Read world motion data
+        world_motion_data: np.ndarray = hdf["motion_data"][:]
+
     return {
         "hierarchy": hierarchy,
         "motion": motion_data,
-        "channels": channels
+        "channels": channels,
+        "order": order,
+        "world_motion": world_motion_data
     }

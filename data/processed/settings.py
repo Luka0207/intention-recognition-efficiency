@@ -1,8 +1,5 @@
 import os
 
-
-
-
 # Base directory for the skeletal dataset
 BASE_DATASET_PATH = "D:\\Datasets\\InHARDProcessedRaw"
 
@@ -28,4 +25,3 @@ if __name__ == "__main__":
     print(f"RAW_PROCESSED_DATA_PATH: {RAW_PROCESSED_DATA_PATH}")
     print(f"RAW_ONLINE_PROCESSED_DATA_PATH: {RAW_ONLINE_PROCESSED_DATA_PATH}")
     print(f"Supported HDF5 File Extension: {HDF5_FILE_EXTENSION}")
-    print(f"Supported BVH File Extension: {BVH_FILE_EXTENSION}")

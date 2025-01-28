@@ -3,7 +3,7 @@ import h5py
 import numpy as np
 from data.raw.settings import ONLINE_RAW_DATA_PATH, BVH_FILE_EXTENSION
 from data.processed.settings import RAW_ONLINE_PROCESSED_DATA_PATH, HDF5_FILE_EXTENSION
-from typing import List, Dict
+from typing import List, Dict, Any
 
 def read_bvh_file(file_path: str) -> List[str]:
     """
@@ -34,11 +34,13 @@ def process_bvh_lines(lines: List[str]) -> Dict[str, object]:
     channels = []
     joint_stack = []
     in_motion_section = False
+    order = []
 
     for line in lines:
         if not line:
             continue
         line = line.strip()
+        
         if not in_motion_section:
             if line.startswith("ROOT") or line.startswith("JOINT"):
                 # Extract joint name and add it to the hierarchy
@@ -48,14 +50,17 @@ def process_bvh_lines(lines: List[str]) -> Dict[str, object]:
                     "parent": joint_stack[-1] if joint_stack else None,
                     "offset": None  # Placeholder for offset
                 })
+                order.append(joint_name)
                 joint_stack.append(joint_name)
             elif line.startswith("End Site"):
                 # Handle end site joints
+                joint_name = f"{joint_stack[-1]}_End"
                 hierarchy.append({
-                    "name": f"{joint_stack[-1]}_End",
+                    "name": joint_name,
                     "parent": joint_stack[-1],
                     "offset": None
                 })
+                joint_stack.append(joint_name)
             elif line.startswith("OFFSET"):
                 # Update the offset of the last added joint
                 offset_values = [float(v) for v in line.split()[1:]]
@@ -84,7 +89,8 @@ def process_bvh_lines(lines: List[str]) -> Dict[str, object]:
     return {
         "hierarchy": hierarchy,
         "motion": np.array(motion_data),
-        "channels": channels
+        "channels": channels,
+        "order": order
     }
 
 def parse_bvh(file_path: str) -> Dict[str, object]:
@@ -124,6 +130,8 @@ def save_to_hdf5(parsed_data, hdf5_path):
         # Save channel names
         hdf.create_dataset("channels", data=np.bytes_(parsed_data["channels"]))
 
+        # Save joint parser order
+        hdf.create_dataset("order", data=np.bytes_(parsed_data["order"]))
 
 def main():
     """
@@ -146,7 +154,6 @@ def main():
             parsed_bvh = parse_bvh(raw_file_path)
 
             # Save the parsed data to an HDF5 file
-            
             save_to_hdf5(parsed_bvh, processed_file_path)
 
     print("Processing complete!")

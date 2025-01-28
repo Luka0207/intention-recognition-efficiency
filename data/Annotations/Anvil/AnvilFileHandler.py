@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Union
 
 class AnvilFileHandler:
     def __init__(self, file_path: str, specs_path: Optional[str] = None):
@@ -77,6 +77,21 @@ class AnvilFileHandler:
 
         self.track_contents[track_name] = track_contents
         print(f"Contents of track '{track_name}' stored successfully.")
+
+    def get_track_data(self, track_name: str) -> Optional[List[Dict[str, Union[str, None]]]]:
+        """Returns the contents of a specified track.
+
+        Args:
+            track_name (str): The name of the track to retrieve data from.
+
+        Returns:
+            Optional[List[Dict[str, Union[str, None]]]]: A list of dictionaries containing track data, or None if the track is not found.
+        """
+        if track_name in self.track_contents:
+            return self.track_contents[track_name]
+
+        print(f"Track '{track_name}' not found.")
+        return None
 
     def display_action_label(self) -> None:
         """Displays the content of the 'Action Label' track."""
